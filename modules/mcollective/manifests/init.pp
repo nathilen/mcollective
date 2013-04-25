@@ -41,7 +41,7 @@ class mcollective {
   }
 
   rabbitmq_user { 'mcollective':
-    admin    => false,
+    admin    => true,
     password => 'password',
     provider => 'rabbitmqctl',
   }
@@ -84,8 +84,12 @@ class mcollective {
   }
 
   exec {'create_broadcast_exchange':
-    command => '/usr/bin/rabbitmqadmin declare exchange --username=mcollective --password=password --vhost=mcollective --name=mcollective_broadcast type=topic',
-    require => File['/usr/bin/rabbitmqadmin'],
+    command => '/usr/bin/rabbitmqadmin declare exchange --username=mcollective --password=password --vhost=mcollective name=mcollective_broadcast type=topic',
+    require => [File['/usr/bin/rabbitmqadmin'], Service['rabbitmq-server'], Rabbitmq_Vhost['mcollective'], Rabbitmq_User['mcollective'], Rabbitmq_User_Permissions['mcollective@mcollective']],
   }
 
+  exec {"create_directed_exchange":
+    command => "/usr/bin/rabbitmqadmin declare exchange --username=mcollective --password=password --vhost=mcollective name=mcollective_directed type=direct",
+    require => [File['/usr/bin/rabbitmqadmin'], Service['rabbitmq-server'], Rabbitmq_Vhost['mcollective'], Rabbitmq_User['mcollective'], Rabbitmq_User_Permissions['mcollective@mcollective']],
+  }
 }
