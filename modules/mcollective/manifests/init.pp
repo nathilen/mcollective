@@ -78,11 +78,6 @@ class mcollective {
     notify => Service['rabbitmq-server'],
   }
 
-  file_line{'node_entry':
-    path => '/etc/hosts',
-    line => '192.168.33.11 node1',
-  }
-
   exec {'create_broadcast_exchange':
     command => '/usr/bin/rabbitmqadmin declare exchange --username=mcollective --password=password --vhost=mcollective name=mcollective_broadcast type=topic',
     require => [File['/usr/bin/rabbitmqadmin'], Service['rabbitmq-server'], Rabbitmq_Vhost['mcollective'], Rabbitmq_User['mcollective'], Rabbitmq_User_Permissions['mcollective@mcollective']],
