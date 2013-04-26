@@ -18,10 +18,15 @@ class mcollective {
     require => Apt::Source['puppetlabs'],
   }
 
-  file {'/etc/mcollective/client.cfg':
+  file { '/etc/mcollective/client.cfg':
     ensure => present,
     source => 'puppet:///modules/mcollective/client.cfg',
     require => Package['mcollective-client']
   }
 
+  file { '/usr/share/mcollective/plugins/mcollective/agent/helloworld.ddl':
+    ensure => present,
+    source => 'puppet:///modules/mcollective/helloworld.ddl',
+    require => Package['mcollective-client']
+  }
 }

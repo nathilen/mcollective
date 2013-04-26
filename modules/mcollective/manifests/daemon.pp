@@ -30,4 +30,16 @@ class mcollective::daemon {
     require => Package['mcollective'],
     notify => Service['mcollective'],
   }
+
+  file { '/usr/share/mcollective/plugins/mcollective/agent/helloworld.ddl':
+    ensure => present,
+    source => 'puppet:///modules/mcollective/helloworld.ddl',
+    require => Package['mcollective']
+  }
+
+  file { '/usr/share/mcollective/plugins/mcollective/agent/helloworld.rb':
+    ensure => present,
+    source => 'puppet:///modules/mcollective/helloworld.rb',
+    require => Package['mcollective']
+  }
 }
