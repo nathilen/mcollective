@@ -7,7 +7,7 @@ class mcollective::daemon {
     key        => '4BD6EC30',
     key_server => 'pgp.mit.edu',
   }
-  
+
   package { 'ruby-stomp':
     ensure => present,
     require => Apt::Source['puppetlabs'],
@@ -15,17 +15,31 @@ class mcollective::daemon {
 
   package { 'mcollective':
     ensure => present,
-    require => Apt::Source['puppetlabs'],
-  }
-  
-  service {'mcollective':
-    ensure => running,
-    require => Package['mcollective'],
+    require => [Apt::Source['puppetlabs'], Package['ruby-stomp']],
   }
 
-  file {'/etc/mcollective/server.cfg':
+  service { 'mcollective':
+    ensure  => running,
+    enable  => true,
+    require => [Package['mcollective'], Package['ruby-stomp']],
+  }
+
+  file { '/etc/mcollective/server.cfg':
     ensure => present,
     source => 'puppet:///modules/mcollective/server.cfg',
+    require => Package['mcollective'],
+    notify => Service['mcollective'],
+  }
+
+  file { '/usr/share/mcollective/plugins/mcollective/agent/helloworld.ddl':
+    ensure => present,
+    source => 'puppet:///modules/mcollective/helloworld.ddl',
+    require => Package['mcollective']
+  }
+
+  file { '/usr/share/mcollective/plugins/mcollective/agent/helloworld.rb':
+    ensure => present,
+    source => 'puppet:///modules/mcollective/helloworld.rb',
     require => Package['mcollective']
   }
 }
